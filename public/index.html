@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Simple Simon</title>
+    <link rel="stylesheet" href="/css/simplesimon.css">
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+
+<h1 class="center"> The Simplest of Simons </h1>
+
+<p class="center" id="round"> </p>
+
+<button class = "center" id="randomNumbers">Start</button>
+
+<button class = "center" id="reset">Reset</button>
+
+<div id="canvas">
+<ul class='gameBoard'>
+    <li class='sliceRed'>
+        <div id= 'colorRed' class='slice-contentsRed'></div>
+    </li>
+    <li class='sliceYellow'>
+        <div id= 'colorYellow' class='slice-contentsYellow'></div>
+    </li>
+    <li class='sliceBlue'>
+        <div id= 'colorBlue' class='slice-contentsBlue'></div>
+    </li>
+    <li class='sliceGreen'>
+        <div id= 'colorGreen' class='slice-contentsGreen'></div>
+    </li>
+</ul>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var pattern = [];
+var userPattern = [];
+var count = 0;
+var round = 0;
+
+$('#round').text('Round: ' + round);
+
+//function that starts each level
+function startGame(){
+    var x = Math.floor((Math.random() * 4) + 1);
+    pattern.push (x);
+    console.log(pattern);
+    console.log(count);
+    userPattern = [];
+    patternIndex = 0;
+    userPatternIndex = 0;
+        
+    round++;
+    $('#round').html('Round: ' + round);
+
+    var patternInterval = setInterval(function() {
+        if (pattern[count] == 1){
+            $('#colorRed').fadeOut(100).fadeIn(100)
+        } else if (pattern[count] == 2){
+            $('#colorYellow').fadeOut(100).fadeIn(100)
+        } else if (pattern[count] == 3){
+            $('#colorBlue').fadeOut(100).fadeIn(100)
+        } else if (pattern[count] == 4){ 
+            $('#colorGreen').fadeOut(100).fadeIn(100)
+        }
+
+        count++;
+
+        if (count == pattern.length){
+        clearInterval(patternInterval);
+        console.log('cleared interval');
+        count = 0;
+        };
+
+    }, 1000)
+};
+
+//Starts game (calls start function)
+$(document).on('click', '#randomNumbers', function (){
+
+    resetGame();
+    startGame();
+
+});
+
+//Function for resetting game
+function resetGame (){
+    $('body').css({ 
+    'background-image':'url()',
+    });
+    $('#canvas').show();
+    round = 0;
+    $('#round').html('Round: ' + round);
+    pattern= [];
+    userPattern = [];
+};
+
+//Resets game board (calls reset function)
+$(document).on('click', '#reset', function(){
+
+    resetGame();
+
+});
+
+var userPatternIndex = 0;
+var patternIndex = 0;
+
+//checks randomly generated array against pattern user inputs
+function checkCondition(){
+    console.log(userPattern);
+    if (userPattern[userPatternIndex] == pattern[patternIndex]){
+        console.log ('success');
+        userPatternIndex++;
+        patternIndex++;
+    } else {
+        $('body').css({
+            'background-image':'url(/img/youlose.png)',
+            'background-attachment' : 'fixed',
+            'background-size' : '100%'
+        });
+        $('#canvas').hide();
+        round = 0;
+        $('#round').html('Round: ' + round);
+        userPatternIndex = 0;
+        patternIndex = 0;
+        userPattern = [];
+    };
+
+    if (userPatternIndex == pattern.length){
+        startGame();
+    };
+};
+
+//on each slice click, pushes user's pattern to array and calls compare function
+$(document).on('click', '.sliceRed', function(){
+    userPattern.push(1);
+    checkCondition();
+});
+
+$(document).on('click', '.sliceYellow', function(){
+    userPattern.push(2);
+    checkCondition();
+});
+
+$(document).on('click', '.sliceBlue', function(){
+    userPattern.push(3);
+    checkCondition();
+});
+
+$(document).on('click', '.sliceGreen', function(){
+    userPattern.push(4);
+    checkCondition();
+});
+
+})();
+</script>
+
+</body>
+</html>
